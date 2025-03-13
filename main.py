@@ -261,7 +261,7 @@ async def account_login(bot: Client, m: Message):
                       🚀 **Extracted By:** `{MR}`  
                       '''
                       
-                      cc1 = f''' 
+                cc1 = f''' 
                       **╭── ⋆⋅☆⋅⋆ ──╮**  
                       ✦ **{str(count).zfill(3)}** ✦  
                       **╰── ⋆⋅☆⋅⋆ ──╯**  
@@ -273,7 +273,7 @@ async def account_login(bot: Client, m: Message):
                       🚀 **Extracted By:** `{MR}`  
                       '''
                       
-                      cc2 = f''' 
+                cc2 = f''' 
                       **╭── ⋆⋅☆⋅⋆ ──╮**  
                       ✦ **{str(count).zfill(3)}** ✦  
                       **╰── ⋆⋅☆⋅⋆ ──╯**  
@@ -285,7 +285,7 @@ async def account_login(bot: Client, m: Message):
                       🚀 **Extracted By:** `{MR}`  
                       '''
                       
-                      ccyt = f''' 
+                ccyt = f''' 
                       **╭── ⋆⋅☆⋅⋆ ──╮**  
                       ✦ **{str(count).zfill(3)}** ✦  
                       **╰── ⋆⋅☆⋅⋆ ──╯**  
