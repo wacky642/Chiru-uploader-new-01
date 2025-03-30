@@ -50,6 +50,105 @@ token_cp ='eyJjb3Vyc2VJZCI6IjQ1NjY4NyIsInR1dG9ySWQiOm51bGwsIm9yZ0lkIjo0ODA2MTksI
 async def account_login(bot: Client, m: Message):                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
     await m.reply_text(f"**__Hello From 🅱🅴🅰🆂🆃 👑__** [{m.from_user.first_name}](tg://user?id={m.from_user.id})\n>>I am TXT file Dowloader Bot.\n\n/drm to upload txt file/n/rukja to stop me 👿")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+# File paths
+SUBSCRIPTION_FILE = "subscription_data.txt"
+
+# Admin ID
+YOUR_ADMIN_ID = 5680454765
+
+# Function to read subscription data
+def read_subscription_data():
+    if not os.path.exists(SUBSCRIPTION_FILE):
+        return []
+    with open(SUBSCRIPTION_FILE, "r") as f:
+        return [line.strip().split(",") for line in f.readlines()]
+
+# Function to write subscription data
+def write_subscription_data(data):
+    with open(SUBSCRIPTION_FILE, "w") as f:
+        for user in data:
+            f.write(",".join(user) + "\n")
+
+# Admin-only decorator
+def admin_only(func):
+    async def wrapper(client, message: Message):
+        if message.from_user.id != YOUR_ADMIN_ID:
+            await message.reply_text("You are not authorized to use this command.")
+            return
+        await func(client, message)
+    return wrapper
+
+# 1. /adduser
+@bot.on_message(filters.command("adduser") & filters.private)
+@admin_only
+async def add_user(client, message: Message):
+    try:
+        _, user_id, expiration_date = message.text.split()
+        subscription_data = read_subscription_data()
+        subscription_data.append([user_id, expiration_date])
+        write_subscription_data(subscription_data)
+        await message.reply_text(f"User {user_id} added with expiration date {expiration_date}.")
+    except ValueError:
+        await message.reply_text("Invalid command format. Use: /adduser <user_id> <expiration_date>")
+
+
+# 2. /removeuser
+@bot.on_message(filters.command("removeuser") & filters.private)
+@admin_only
+async def remove_user(client, message: Message):
+    try:
+        _, user_id = message.text.split()
+        subscription_data = read_subscription_data()
+        subscription_data = [user for user in subscription_data if user[0] != user_id]
+        write_subscription_data(subscription_data)
+        await message.reply_text(f"User {user_id} removed.")
+    except ValueError:
+        await message.reply_text("Invalid command format. Use: /removeuser <user_id>")
+
+YOUR_ADMIN_ID = 5680454765
+
+# Helper function to check admin privilege
+def is_admin(user_id):
+    return user_id == YOUR_ADMIN_ID
+
+# Command to show all users (Admin only)
+@bot.on_message(filters.command("users") & filters.private)
+async def show_users(client, message: Message):
+    user_id = message.from_user.id
+
+    if not is_admin(user_id):
+        await message.reply_text("❌ You are not authorized to use this command.")
+        return
+
+    subscription_data = read_subscription_data()
+    
+    if subscription_data:
+        users_list = "\n".join(
+            [f"{idx + 1}. User ID: `{user[0]}`, Expiration Date: `{user[1]}`" for idx, user in enumerate(subscription_data)]
+        )
+        await message.reply_text(f"**👥 Current Subscribed Users:**\n\n{users_list}")
+    else:
+        await message.reply_text("ℹ️ No users found in the subscription data.")
+
+# 3. /myplan
+@bot.on_message(filters.command("myplan") & filters.private)
+async def my_plan(client, message: Message):
+    user_id = str(message.from_user.id)
+    subscription_data = read_subscription_data()  # Make sure this function is implemented elsewhere
+
+    # Define YOUR_ADMIN_ID somewhere in your code
+    if user_id == str(YOUR_ADMIN_ID):  # YOUR_ADMIN_ID should be an integer
+        await message.reply_text("**✨ You have permanent access!**")
+    elif any(user[0] == user_id for user in subscription_data):  # Assuming subscription_data is a list of [user_id, expiration_date]
+        expiration_date = next(user[1] for user in subscription_data if user[0] == user_id)
+        await message.reply_text(
+            f"**📅 Your Premium Plan Status**\n\n"
+            f"**🆔 User ID**: `{user_id}`\n"
+            f"**⏳ Expiration Date**: `{expiration_date}`\n"
+            f"**🔒 Status**: *Active*"
+        )
+    else:
+        await message.reply_text("**❌ You are not a premium user.**")
 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
 @bot.on_message(filters.command("rukja"))                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
@@ -61,6 +160,13 @@ async def restart_handler(_, m):
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
 @bot.on_message(filters.command(["drm"]))
 async def account_login(bot: Client, m: Message):
+    if m.chat.type == "private":
+        user_id = str(m.from_user.id)
+        subscription_data = read_subscription_data()
+        if not any(user[0] == user_id for user in subscription_data):
+            await m.reply_text("❌ You are not a premium user. Please upgrade your subscription! 💎")
+            return
+          
     editable = await m.reply_text("**Please Send TXT file for download**")
     input: Message = await bot.listen(editable.chat.id)
     y = await input.download()
