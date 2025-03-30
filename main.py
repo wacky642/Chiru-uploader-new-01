@@ -49,7 +49,6 @@ token_cp ='eyJjb3Vyc2VJZCI6IjQ1NjY4NyIsInR1dG9ySWQiOm51bGwsIm9yZ0lkIjo0ODA2MTksI
 
 @bot.on_message(filters.command(["start"]))
 async def start_command(bot: Client, message: Message):
-    random_image_url = random.choice(image_urls)
     caption = (
     f"<blockquote>"  
     f"✨ *Premium DRM Experience* ✨\n"
