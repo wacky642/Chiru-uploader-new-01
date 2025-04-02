@@ -48,26 +48,27 @@ api_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNzkxOTMzNDE5NS
 token_cp ='eyJjb3Vyc2VJZCI6IjQ1NjY4NyIsInR1dG9ySWQiOm51bGwsIm9yZ0lkIjo0ODA2MTksImNhdGVnb3J5SWQiOm51bGx9'
 @bot.on_message(filters.command("start"))                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
 async def account_login(bot: Client, m: Message):                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
-    await m.reply_text('''🎉 <b>Welcome to Non-DRM Bot! </b>🎉
-<b><i>You can have access to download all Non-DRM+Decrypted DRM Bot 🔐 including:</i></b>
-
-<blockquote><i><b>• 📚 Appx Zip</b>
-   <b>• 🎓 Classplus DRM+ NDRM</b>
-   <b>• 🧑‍🏫 PhysicsWallah DRM</b>
-   <b>• 📚 CareerWill + PDF</b>
-   <b>• 🎓 Khan GS</b>
-   <b>• 🎓 Study Iq DRM</b>
-   <b>• 🚀 APPX + APPX DEC PDF</b>
-   <b>• 🎓 Vimeo Protection</b>
-   <b>• 🎓 Brightcove Protection</b>
-   <b>• 🎓 Visionias Protection</b>
-   <b>• 🎓 Zoom Video</b>
-   <b>• 🎓 All Non DRM+DEC DRM</b>
-   <b>• 🎓 MPD URLs if the key is known (e.g., Mpd_url?key=key XX:XX)</b></i></blockquote>
+    await m.reply_text('''🎉 <b>Welcome to DRM Bot! </b>🎉
+<b>You can have access to download all Non-DRM+Decrypted DRM Bot 🔐 including:</b>
+<blockquote><i>
+   • 📚 Appx Zip
+   • 🎓 Classplus DRM+ NDRM
+   • 🧑‍🏫 PhysicsWallah DRM
+   • 📚 CareerWill + PDF
+   • 🎓 Khan GS
+   • 🎓 Study Iq DRM
+   • 🚀 APPX + APPX DEC PDF
+   • 🎓 Vimeo Protection
+   • 🎓 Brightcove Protection
+   • 🎓 Visionias Protection
+   • 🎓 Zoom Video
+   • 🎓 All Non DRM+DEC DRM
+   • 🎓 MPD URLs if the key is known (e.g., Mpd_url?key=key XX:XX)
+</blockquote></i>
 <b>🚀 You are not subscribed to any plan yet!</b>
 
-<blockquote><b><i>💵 Monthly Plan: ₹ 400</i></b></blockquote></i>
-<b><i>If you want to buy membership of the bot, feel free to contact the Bot [Admin](https://t.me/chiru52)</i></b>''')
+<blockquote><i>💵 Monthly Plan: ₹ 400</blockquote></i>
+<b>If you want to buy membership of the bot, feel free to contact the Bot</b> [🅱🅴🅰🆂🆃👑](https://t.me/chiru52)</b>''')
 # File paths
 SUBSCRIPTION_FILE = "subscription_data.txt"
 
