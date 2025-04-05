@@ -45,7 +45,8 @@ photo = "photo.jpg"
 
 api_url = "http://master-api-v3.vercel.app/"
 api_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNzkxOTMzNDE5NSIsInRnX3VzZXJuYW1lIjoi4p61IFtvZmZsaW5lXSIsImlhdCI6MTczODY5MjA3N30.SXzZ1MZcvMp5sGESj0hBKSghhxJ3k1GTWoBUbivUe1I"
-token_cp ='eyJjb3Vyc2VJZCI6IjQ1NjY4NyIsInR1dG9ySWQiOm51bGwsIm9yZ0lkIjo0ODA2MTksImNhdGVnb3J5SWQiOm51bGx9'
+token_cp ='eyJjb3Vyc2VJZCI6IjQ1NjY4NyIsInR1dG9ySWQiOm51bGwsIm9yZ0lkIjo0ODA2MTksImNhdGVnb3J5SWQiOm51bGx9r'
+
 @bot.on_message(filters.command("start"))                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
 async def account_login(bot: Client, m: Message):                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
     await m.reply_text('''🎉 <b>Welcome to DRM Bot! </b>🎉
@@ -97,6 +98,19 @@ def admin_only(func):
             return
         await func(client, message)
     return wrapper
+
+# /id Command - Show Group/Channel ID
+@bot.on_message(filters.command(["id"]))
+async def id_command(client, message: Message):
+    chat_id = message.chat.id
+    await message.reply_text(
+        f"🎉 **Success!**\n\n"
+        f"🆔 **This Group/Channel ID:**\n`{chat_id}`\n\n"
+        f"📌 **Use this ID for further requests.**\n\n"
+        f"🔗 To link this group/channel, use the following command:\n"
+        f"👉 `/add_channel {chat_id}`"
+    )
+
 
 # 1. /adduser
 @bot.on_message(filters.command("adduser") & filters.private)
@@ -169,8 +183,80 @@ async def my_plan(client, message: Message):
         )
     else:
         await message.reply_text("**❌ You are not a premium user.**")
+# 4. /add_channel
+@bot.on_message(filters.command("add_channel"))
+async def add_channel(client, message: Message):
+    user_id = str(message.from_user.id)
+    subscription_data = read_subscription_data()
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+    if not any(user[0] == user_id for user in subscription_data):
+        await message.reply_text("**❌ You are not a premium user.**")
+        return
+
+    try:
+        _, channel_id = message.text.split()
+        channels = read_channels_data()
+        if channel_id not in channels:
+            channels.append(channel_id)
+            write_channels_data(channels)
+            await message.reply_text(f"Channel/Group ID {channel_id} Added Successfully.")
+        else:
+            await message.reply_text(f"Channel/Group ID {channel_id} Is Already Added.")
+    except ValueError:
+        await message.reply_text("Invalid command format. Use: /add_channel {channel/group_id}")
+
+
+# 5. /remove_channels
+@bot.on_message(filters.command("remove_channel"))
+async def remove_channel(client, message: Message):
+    user_id = str(message.from_user.id)
+    subscription_data = read_subscription_data()
+
+    if not any(user[0] == user_id for user in subscription_data):
+        await message.reply_text("**❌ You are not a premium user.**")
+        return
+
+    try:
+        _, channel_id = message.text.split()
+        channels = read_channels_data()
+        if channel_id in channels:
+            channels.remove(channel_id)
+            write_channels_data(channels)
+            await message.reply_text(f"Channel {channel_id} Removed Successfully.")
+        else:
+            await message.reply_text(f"Channel {channel_id} is not in the list.")
+    except ValueError:
+        await message.reply_text("Invalid command format. Use: /remove_channels {channel/group_id}")
+
+# Command to show all allowed channels (Admin only)
+@bot.on_message(filters.command("allowed_channels"))
+async def allowed_channels(client, message: Message):
+    user_id = message.from_user.id
+
+    if not is_admin(user_id):
+        await message.reply_text("❌ It's Only Owner Command.")
+        return
+
+    channels = read_channels_data()
+    if channels:
+        channels_list = "\n".join([f"- {channel}" for channel in channels])
+        await message.reply_text(f"**📋 Allowed Channels/Groups:**\n\n{channels_list}")
+    else:
+        await message.reply_text("ℹ️ No Channels/Groups are currently allowed.")
+
+# Command to remove all channels (Admin only)
+@bot.on_message(filters.command("remove_all_channels"))
+async def remove_all_channels(client, message: Message):
+    user_id = message.from_user.id
+
+    if not is_admin(user_id):
+        await message.reply_text("❌ It's Only Owner Command.")
+        return
+
+    # Clear the channels data
+    write_channels_data([])
+    await message.reply_text("✅ **All Channels/Groups have been removed successfully.**")
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 @bot.on_message(filters.command("stop"))                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
 async def restart_handler(_, m):                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
     await m.reply_text("🚦**STOPPED**🚦", True)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
@@ -314,7 +400,17 @@ async def account_login(bot: Client, m: Message):
                 mpd, keys = helper.get_mps_and_keys(url)
                 url = mpd
                 keys_string = " ".join([f"--key {key}" for key in keys])
-
+              
+            elif "d1d34p8vz63oiq" in url or "sec1.pw.live" in url:
+             url = f"https://anonymouspwplayer-b99f57957198.herokuapp.com/pw?url={url}?token={raw_text4}"
+              
+            elif "acecwply" in url:
+                cmd = f'yt-dlp -o "{name}.%(ext)s" -f "bestvideo[height<={raw_text2}]+bestaudio" --hls-prefer-ffmpeg --no-keep-video --remux-video mkv --no-warning "{url}"'
+                  
+            elif "edge.api.brightcove.com" in url:
+                bcov = 'bcov_auth=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MjQyMzg3OTEsImNvbiI6eyJpc0FkbWluIjpmYWxzZSwiYXVzZXIiOiJVMFZ6TkdGU2NuQlZjR3h5TkZwV09FYzBURGxOZHowOSIsImlkIjoiZEUxbmNuZFBNblJqVEROVmFWTlFWbXhRTkhoS2R6MDkiLCJmaXJzdF9uYW1lIjoiYVcxV05ITjVSemR6Vm10ak1WUlBSRkF5ZVNzM1VUMDkiLCJlbWFpbCI6Ik5Ga3hNVWhxUXpRNFJ6VlhiR0ppWTJoUk0wMVdNR0pVTlU5clJXSkRWbXRMTTBSU2FHRnhURTFTUlQwPSIsInBob25lIjoiVUhVMFZrOWFTbmQ1ZVcwd1pqUTViRzVSYVc5aGR6MDkiLCJhdmF0YXIiOiJLM1ZzY1M4elMwcDBRbmxrYms4M1JEbHZla05pVVQwOSIsInJlZmVycmFsX2NvZGUiOiJOalZFYzBkM1IyNTBSM3B3VUZWbVRtbHFRVXAwVVQwOSIsImRldmljZV90eXBlIjoiYW5kcm9pZCIsImRldmljZV92ZXJzaW9uIjoiUShBbmRyb2lkIDEwLjApIiwiZGV2aWNlX21vZGVsIjoiU2Ftc3VuZyBTTS1TOTE4QiIsInJlbW90ZV9hZGRyIjoiNTQuMjI2LjI1NS4xNjMsIDU0LjIyNi4yNTUuMTYzIn19.snDdd-PbaoC42OUhn5SJaEGxq0VzfdzO49WTmYgTx8ra_Lz66GySZykpd2SxIZCnrKR6-R10F5sUSrKATv1CDk9ruj_ltCjEkcRq8mAqAytDcEBp72-W0Z7DtGi8LdnY7Vd9Kpaf499P-y3-godolS_7ixClcYOnWxe2nSVD5C9c5HkyisrHTvf6NFAuQC_FD3TzByldbPVKK0ag1UnHRavX8MtttjshnRhv5gJs5DQWj4Ir_dkMcJ4JaVZO3z8j0OxVLjnmuaRBujT-1pavsr1CCzjTbAcBvdjUfvzEhObWfA1-Vl5Y4bUgRHhl1U-0hne4-5fF0aouyu71Y6W0eg'
+                url = url.split("bcov_auth")[0]+bcov 
+              
             elif "classplusapp.com/drm/" in url:
                 url = 'https://dragoapi.vercel.app/classplus?link=' + url
                 mpd, keys = helper.get_mps_and_keys(url)
